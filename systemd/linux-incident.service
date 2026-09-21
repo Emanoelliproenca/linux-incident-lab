@@ -1,0 +1,13 @@
+[Unit]
+Description=Linux Incident Lab HTTP Service
+After=network.target
+
+[Service]
+Type=simple
+User=emanoelli-proenca
+WorkingDirectory=/home/emanoelli-proenca/projetos-devops/linux-incident-lab/app
+ExecStart=/usr/bin/python3 -m http.server 8080
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
