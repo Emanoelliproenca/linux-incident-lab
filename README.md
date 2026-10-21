@@ -262,6 +262,133 @@ Contém o arquivo utilizado para configurar a aplicação como serviço Linux.
 
 ---
 
+
+---
+
+## Monitoramento HTTP com Python
+
+Além da investigação manual de incidentes, o laboratório
+conta com um monitor desenvolvido em Python para verificar
+a disponibilidade da aplicação HTTP.
+
+O monitor está localizado em:
+
+`monitor/monitor.py`
+
+### Funcionalidades
+
+- Requisição HTTP para `http://localhost:8080`
+- Timeout de conexão de 5 segundos
+- Até 3 tentativas de verificação
+- Intervalo de 2 segundos entre tentativas
+- Tratamento de erros de conexão
+- Registro de eventos com a biblioteca `logging`
+- Códigos de saída para integração com automações
+
+### Execução
+
+Com a aplicação HTTP em funcionamento:
+
+```bash
+python3 monitor/monitor.py
+```
+
+Exemplo de resultado:
+
+```text
+INFO | Serviço disponível | HTTP 200 | Tentativa 1
+```
+
+### Detecção de indisponibilidade
+
+Quando a aplicação está indisponível, o monitor
+realiza até três tentativas antes de declarar a falha.
+
+Exemplo:
+
+```text
+ERROR | Falha na conexão | Tentativa 1/3
+ERROR | Falha na conexão | Tentativa 2/3
+ERROR | Falha na conexão | Tentativa 3/3
+CRITICAL | Serviço indisponível após todas as tentativas
+```
+
+### Códigos de saída
+
+| Código | Significado |
+|---|---|
+| 0 | Aplicação disponível |
+| 1 | Aplicação indisponível |
+
+Os registros também são armazenados localmente
+em `monitor/monitor.log`, arquivo ignorado pelo Git.
+
+---
+
+## Testes automatizados com Pytest
+
+O projeto utiliza Pytest e unittest.mock para
+validar o comportamento do monitor sem depender
+da disponibilidade real do serviço Linux.
+
+Foram implementados três cenários:
+
+1. Serviço disponível com resposta HTTP 200.
+2. Serviço indisponível após três tentativas.
+3. Recuperação do serviço na segunda tentativa.
+
+### Executando os testes
+
+Instalar as dependências:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+Executar os testes:
+
+```bash
+python -m pytest -v
+```
+
+### Resultado validado localmente
+
+```text
+test_service_available PASSED
+test_service_unavailable PASSED
+test_service_recovers_on_retry PASSED
+
+3 passed
+```
+
+Os testes utilizam mocks para simular as respostas
+HTTP, permitindo execução independente do systemd.
+
+---
+
+## Integração contínua com GitHub Actions
+
+O projeto possui uma configuração de integração
+contínua no arquivo:
+
+`.github/workflows/python-tests.yml`
+
+A pipeline foi preparada para:
+
+1. Executar em ambiente Ubuntu.
+2. Configurar o Python 3.10.
+3. Instalar as dependências do projeto.
+4. Executar os testes automatizados com Pytest.
+
+Os gatilhos configurados são:
+
+- Push na branch main.
+- Pull request direcionado à branch main.
+
+A execução no GitHub Actions será validada após
+a publicação das alterações no repositório.
+
+
 ## Principais aprendizados
 
 Durante o desenvolvimento deste laboratório pratiquei:

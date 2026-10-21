@@ -1,0 +1,17 @@
+
+# Logs gerados pelo monitor
+*.log
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Cache de testes
+.pytest_cache/
+
+# Configurações locais
+.env
